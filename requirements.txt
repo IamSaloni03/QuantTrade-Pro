@@ -1,0 +1,2 @@
+# Add your dependencies here
+Django>=4.2
