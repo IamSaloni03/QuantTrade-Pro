@@ -39,10 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     # Your apps
-    'src.apps.users',
-    'src.apps.trading',
-    'src.apps.analytics',
-    'src.apps.data_pipeline',
+    'src.apps.users.apps.UsersConfig',
+    'src.apps.trading.apps.TradingConfig',
+    'src.apps.analytics.apps.AnalyticsConfig',
+    'src.apps.data_pipeline.apps.DataPipelineConfig',
+    
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
