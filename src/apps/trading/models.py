@@ -27,6 +27,22 @@ class Portfolio(models.Model):
             elif trade.trade_type == 'sell':
                 value -= trade.price * trade.quantity
         return value
+    
+    def total_value(self):
+       """Calculate total portfolio value based on all trades"""
+       total = 0
+       trades = self.trade_set.all()
+       
+       for trade in trades:
+           if trade.trade_type == 'buy':
+               total += float(trade.price) * trade.quantity
+           elif trade.trade_type == 'sell':
+               total -= float(trade.price) * trade.quantity
+       return total
+
+    def __str__(self):
+        return f"{self.user.username} - {self.name} (Value: ${self.total_value():.2f})"
+
 
 class Trade(models.Model):
     portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE)
