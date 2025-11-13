@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'src.apps.data_pipeline.apps.DataPipelineConfig',
     
     'rest_framework',
+
 ]
 
 MIDDLEWARE = [
