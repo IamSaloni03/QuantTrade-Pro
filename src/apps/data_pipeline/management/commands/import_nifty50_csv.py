@@ -2,36 +2,32 @@
 ===========================================================
 Project: QuantTrade-Pro (Algorithmic Trading Platform)
 Author:  Saloni Gupta 
-Company: Internal (Personal Project)
 Date:    2025-12-16
 Version: 0.1
 Guidance: Built in collaboration with Vasvi Soni
 
 Description:
 ------------
-Django management command to load OHLCV market data from
-a CSV file into the MarketData model.
+Django management command to import historical NIFTY 50
+market data from a CSV file into the MarketData model.
 
-Usage:
-------
-python manage.py load_marketdata path/to/file.csv
+The CSV is expected at:
+- src/apps/data_pipeline/nifty50_30days.csv
 
-Expected CSV columns:
+Columns expected (header row):
 - asset_symbol, timestamp, open_price, high_price,
   low_price, close_price, volume
 
 Note:
 -----
-- Uses update_or_create() on (asset_symbol, timestamp)
-  so reruns update existing rows instead of duplicating.
-- Parses timestamp using datetime.fromisoformat; adjust
-  if your format differs.
+Each row is upserted based on (asset_symbol, timestamp)
+using MarketData.objects.update_or_create().
 ===========================================================
 """
 
 import csv
-from datetime import datetime
 from pathlib import Path
+from datetime import datetime
 
 from django.core.management.base import BaseCommand, CommandError
 
@@ -39,28 +35,27 @@ from src.apps.data_pipeline.models import MarketData
 
 
 class Command(BaseCommand):
-    help = "Load market data from a CSV file into MarketData."
+    """
+    Import NIFTY50 historical data from CSV into MarketData.
+    """
 
-    def add_arguments(self, parser):
-        parser.add_argument(
-            "csv_file",
-            type=str,
-            help="Path to the CSV file (e.g. src/apps/data_pipeline/nifty50_30days.csv).",
-        )
+    help = "Import NIFTY50 OHLCV data from nifty50_30days.csv into MarketData."
 
     def handle(self, *args, **options):
-        csv_path = Path(options["csv_file"])
+        # Locate project root and CSV path
+        csv_path = Path("src") / "apps" / "data_pipeline" / "nifty50_30days.csv"
+        csv_path = csv_path.resolve()
 
         if not csv_path.exists():
-            raise CommandError(f"CSV file not found: {csv_path}")
+            raise CommandError(f"CSV file not found at: {csv_path}")
 
         self.stdout.write(self.style.NOTICE(f"Reading CSV: {csv_path}"))
 
-        created = 0
-        updated = 0
-        skipped = 0
+        created_count = 0
+        updated_count = 0
+        skipped_count = 0
 
-        with csv_path.open("r", encoding="utf-8") as f:
+        with csv_path.open(mode="r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
 
             for row_num, row in enumerate(reader, start=2):
@@ -73,16 +68,16 @@ class Command(BaseCommand):
                     close_price = float(row["close_price"])
                     volume = int(row["volume"])
 
-                    # adjust format if not ISO, e.g. datetime.strptime(...)
+                    # adjust format if your timestamp is different
                     timestamp = datetime.fromisoformat(timestamp_str)
 
                 except KeyError as e:
                     raise CommandError(
-                        f"Missing expected column {e!r} in CSV header. "
+                        f"Missing column {e!r} in CSV header. "
                         f"Offending row #{row_num}: {row}"
                     )
                 except ValueError as e:
-                    skipped += 1
+                    skipped_count += 1
                     self.stderr.write(
                         self.style.WARNING(
                             f"Skipping row #{row_num} due to parsing error: {e}. Row: {row}"
@@ -90,7 +85,7 @@ class Command(BaseCommand):
                     )
                     continue
 
-                obj, is_created = MarketData.objects.update_or_create(
+                obj, created = MarketData.objects.update_or_create(
                     asset_symbol=asset_symbol,
                     timestamp=timestamp,
                     defaults={
@@ -102,13 +97,14 @@ class Command(BaseCommand):
                     },
                 )
 
-                if is_created:
-                    created += 1
+                if created:
+                    created_count += 1
                 else:
-                    updated += 1
+                    updated_count += 1
 
         self.stdout.write(
             self.style.SUCCESS(
-                f"Import completed. Created: {created}, Updated: {updated}, Skipped: {skipped}"
+                f"Import completed. Created: {created_count}, "
+                f"Updated: {updated_count}, Skipped: {skipped_count}"
             )
         )
