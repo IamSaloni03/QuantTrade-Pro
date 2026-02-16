@@ -19,5 +19,6 @@ router.register(r'newsfeed', NewsFeedViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
+    # path('api/trading/', include('trading.urls'))
 ]
 

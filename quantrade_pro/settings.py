@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-54%j=5i6zl)rgx)q1_3og(fimdaz%5r*40=$&j&i5%vqh9cmdl
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -37,18 +37,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     
     # Your apps
     'src.apps.users.apps.UsersConfig',
     'src.apps.trading.apps.TradingConfig',
     'src.apps.analytics.apps.AnalyticsConfig',
     'src.apps.data_pipeline.apps.DataPipelineConfig',
-    
     'rest_framework',
 
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -74,6 +75,14 @@ TEMPLATES = [
         },
     },
 ]
+
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://192.168.1.6:3000",
+]
+
 
 WSGI_APPLICATION = 'quantrade_pro.wsgi.application'
 
@@ -131,3 +140,10 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
 CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379/0"
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]
+
+CORS_ALLOW_ALL_ORIGINS = True
+
