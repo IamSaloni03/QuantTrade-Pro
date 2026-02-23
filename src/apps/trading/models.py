@@ -169,8 +169,4 @@ class Trade(models.Model):
                     f"Insufficient shares. Trying to sell {self.quantity}, own {owned_quantity}"
                 )
     
-    def save(self, *args, **kwargs):
-        """Override save to run validation"""
-        self.clean()
-        super().save(*args, **kwargs)
-
+    
