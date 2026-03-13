@@ -5,6 +5,9 @@ import Dashboard from "../pages/Dashboard";
 import Trading from "../pages/Trading";
 import Portfolio from "../pages/Portfolio";
 import Market from "../pages/Market";
+import StrategyLab from "../pages/StrategyLab";
+
+
 
 const AppRoutes = () => {
   return (
@@ -15,6 +18,7 @@ const AppRoutes = () => {
           <Route path="/trading" element={<Trading />} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/market" element={<Market />} />
+          <Route path="/strategies" element={<StrategyLab />} />
         </Routes>
       </MainLayout>
     </BrowserRouter>

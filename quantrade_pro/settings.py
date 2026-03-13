@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'src.apps.trading.apps.TradingConfig',
     'src.apps.analytics.apps.AnalyticsConfig',
     'src.apps.data_pipeline.apps.DataPipelineConfig',
+    'src.apps.strategies.apps.StrategiesConfig',
     'rest_framework',
 
 ]
