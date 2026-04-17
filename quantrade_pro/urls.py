@@ -19,8 +19,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # existing API routes
-    path('api/', include(router.urls)),
+    path('api/', include('src.apps.trading.urls')),
 
     # strategies module
     path('api/strategies/', include('src.apps.strategies.urls')),
+
+
 ]

@@ -37,8 +37,24 @@ from src.apps.data_pipeline.models import MarketData
 
 from django.contrib.auth.models import User
 
+from src.apps.data_pipeline.constants import VALID_SYMBOLS, is_valid_symbol
+
 class Asset(models.Model):
-    symbol = models.CharField(max_length=10, unique=True)
+    SYMBOL_CHOICES = [(symbol, symbol) for symbol in VALID_SYMBOLS]
+
+    symbol = models.CharField(
+        max_length=20,
+        choices=SYMBOL_CHOICES,
+        unique=True
+    )
+
+    def save(self, *args, **kwargs):
+        if not is_valid_symbol(self.symbol):
+            raise ValueError(f"Invalid symbol: {self.symbol}")
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.symbol
     name = models.CharField(max_length=100)
 
     def __str__(self):
