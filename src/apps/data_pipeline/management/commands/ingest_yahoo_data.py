@@ -24,7 +24,13 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(f"Fetching data for {symbol}..."))
 
             try:
-                ticker = yf.Ticker(symbol + ".NS")
+                # Handle index symbols differently
+                if symbol == "NIFTY50":
+                    ticker_symbol = "^NSEI"
+                else:
+                    ticker_symbol = symbol + ".NS"
+
+                ticker = yf.Ticker(ticker_symbol)
                 data = ticker.history(period="6mo", interval="1d")
 
                 if data.empty:

@@ -1,6 +1,8 @@
+from celery import result
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from sqlparse import engine
 
 from .serializers import BacktestRequestSerializer
 from .backtesting.backtest_engine import BacktestEngine
@@ -16,6 +18,7 @@ class BacktestView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         asset_symbol = serializer.validated_data["asset_symbol"]
+        assets = request.data.get("assets", [asset_symbol])
         capital = serializer.validated_data["initial_capital"]
 
         strategy_type = serializer.validated_data["strategy_type"]
@@ -28,12 +31,37 @@ class BacktestView(APIView):
 
         engine = BacktestEngine()
 
+        # --- PORTFOLIO BACKTEST ---
+        if len(assets) > 1:
+            result = engine.run_portfolio_backtest(
+                assets=assets,
+                initial_capital=capital,
+                strategy_type=strategy_type,
+                short_window=short_window,
+                long_window=long_window
+            )
+            return Response(result)
+        
+        # --- SINGLE ASSET BACKTEST ---
         result = engine.run_backtest(
+             asset_symbol=asset_symbol,
+             initial_capital=capital,
+             strategy_type=strategy_type,
+             short_window=short_window,
+             long_window=long_window
+             )
+
+        return Response(result)
+
+        # Wrap single strategy into list
+        strategies = [strategy_type]
+
+        results = engine.run_multiple_backtests(
+            strategies=strategies,
             asset_symbol=asset_symbol,
             initial_capital=capital,
-            strategy_type=strategy_type,
             short_window=short_window,
             long_window=long_window
         )
 
-        return Response(result)
+        return Response(results)
