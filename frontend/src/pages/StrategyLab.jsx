@@ -12,7 +12,7 @@ import {
 } from "recharts";
 
 export default function StrategyLab() {
-  const [asset, setAsset] = useState("NIFTY50");
+  const [asset, setAsset] = useState("RELIANCE");
 
   const { result, loading, executeBacktest } = useBacktest();
 
