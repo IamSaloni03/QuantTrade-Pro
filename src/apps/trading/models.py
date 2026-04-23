@@ -170,15 +170,15 @@ class Trade(models.Model):
         super().clean()
         
         # Validate buy trades have sufficient funds
-        if self.trade_type == 'buy':
-            total_cost = self.price * self.quantity
-            if self.portfolio.available_cash() < total_cost:
-                raise ValidationError(
-                    f"Insufficient funds. Need ₹{total_cost}, have ₹{self.portfolio.available_cash()}"
-                )
+        #if self.trade_type == 'buy':
+            #total_cost = self.price * self.quantity
+            #if self.portfolio.available_cash() < total_cost:
+               # raise ValidationError(
+                 #   f"Insufficient funds. Need ₹{total_cost}, have ₹{self.portfolio.available_cash()}"
+                #)
         
         # Validate sell trades have sufficient quantity
-        elif self.trade_type == 'sell':
+        if self.trade_type == 'sell':
             owned_quantity = self.portfolio.get_asset_quantity(self.asset)
             if owned_quantity < self.quantity:
                 raise ValidationError(

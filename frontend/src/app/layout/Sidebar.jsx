@@ -8,6 +8,7 @@ const Sidebar = () => {
     { name: "Portfolio", path: "/portfolio" },
     { name: "Trading", path: "/trading" },
     { name: "Market", path: "/market" },
+    { name: "Signals", path: "/signals" },
   ];
 
   return (

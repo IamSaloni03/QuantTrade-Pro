@@ -26,7 +26,7 @@ const Dashboard = () => {
           </div>
 
           <div className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
-            <TradeForm />
+            <TradeForm refetchTrades={tradesState.refetch}/>
           </div>
 
         </div>
@@ -39,7 +39,10 @@ const Dashboard = () => {
           </div>
 
           <div className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
-            <PositionsTable />
+            <PositionsTable
+            trades={tradesState?.trades || []}
+            assets={assetsState?.assets || []}
+             />
           </div>
 
           <div className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">

@@ -15,6 +15,6 @@ export const useAssets = () => {
     fetchAssets();
   }, []);
 
-  return assets;
+  return {assets};
 };
 

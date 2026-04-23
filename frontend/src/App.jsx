@@ -1,5 +1,6 @@
 
 import AppRoutes from "./app/routes";
+import Signals from "./pages/Signals";
 
 function App() {
   return (

@@ -11,16 +11,16 @@ const Watchlist = ({ assets = [] }) => {
           No assets available
         </p>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-2">
           {assets.map((asset) => (
             <div
               key={asset.id}
-              className="flex justify-between items-center text-sm border-b border-gray-100 pb-2"
+              className="flex flex-col px-3 py-2 rounded-md hover:bg-gray-100 transition cursor-pointer"
             >
-              <span className="font-medium">
+              <span className="text-sm font-medium text-gray-800">
                 {asset.symbol}
               </span>
-              <span className="text-gray-500">
+              <span className="text-xs text-gray-500 truncate">
                 {asset.name}
               </span>
             </div>

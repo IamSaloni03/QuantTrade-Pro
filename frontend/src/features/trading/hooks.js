@@ -10,6 +10,7 @@ export const useTrades = () => {
     try {
       setLoading(true);
       const data = await fetchTrades();
+      console.log("TRADES:", data);
       setTrades(data);
       setError(null);
     } catch (err) {

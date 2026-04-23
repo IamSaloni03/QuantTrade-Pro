@@ -3,10 +3,7 @@ import { createTrade } from "./api";
 import AssetSearchSelect from "./components/AssetSearchSelect";
 import { fetchLatestPrice } from "../assets/api";
 import { useEffect } from "react";
-
-
-
-
+import { useLocation } from "react-router-dom";
 
 const TradeForm = ({refetchTrades}) => {
   const [tradeType, setTradeType] = useState("buy");
@@ -15,7 +12,7 @@ const TradeForm = ({refetchTrades}) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedAsset, setSelectedAsset] = useState(null);
-
+  const location = useLocation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,15 +35,22 @@ const TradeForm = ({refetchTrades}) => {
         asset: selectedAsset.id
      // assuming asset id = 3
       });
-      await refetchTrades(); // Refresh trades after successful creation
+      // separate try
+      try {
+        await refetchTrades();
+      } catch (err) {
+        console.error("Refetch failed:", err);
+      }
 
       setQuantity("");
       setPrice("");
       setSelectedAsset(null);
-
+      
     } catch (err) {
-      setError("Trade failed. Check backend.");
-    } finally {
+      console.log("FULL ERROR:", err);
+      console.log("ERROR RESPONSE:", err.response?.data);
+      setError("Trade failed");
+    }finally {
       setLoading(false);
     }
   };
@@ -65,6 +69,35 @@ const TradeForm = ({refetchTrades}) => {
 
   loadPrice();
 }, [selectedAsset]);
+
+  useEffect(() => {
+    if (location.state) {
+      const { symbol, signal } = location.state;
+
+      if (signal) {
+        setTradeType(signal.toLowerCase());  // BUY → buy, SELL → sell
+      }
+
+      if (symbol) {
+        //fetch asset by symbol
+        const fetchAsset = async () => {
+          try {
+            const res = await fetch("http://localhost:8000/api/assets/");
+            const data = await res.json();
+
+            const found = data.find(a => a.symbol === symbol);
+            if (found) {
+              setSelectedAsset(found);
+            }
+          }catch (err) {
+            console.error("Failed to fetch assets", err);
+          }
+        };
+
+        fetchAsset();
+      }
+    }
+  }, [location.state]);
 
   return (
     <div className="bg-white border border-gray-200 p-5 rounded-lg shadow-sm hover:shadow-md transition">
