@@ -111,9 +111,21 @@ class BacktestEngine:
 })
 
             
+        
+        last_price = float(market_data[-1].close_price)
 
+        # Close open position if still holding
+        if position > 0:
+            capital = position * last_price
+            position = 0
 
-        final_value = capital + (position * float(market_data[-1].close_price))
+            trades.append({
+                "type": "SELL",
+            "price": last_price,
+            "time": market_data[-1].timestamp
+            })
+
+        final_value = capital
 
         win_rate, total_trades = calculate_win_rate(trades)
         max_drawdown = calculate_max_drawdown(equity_curve)

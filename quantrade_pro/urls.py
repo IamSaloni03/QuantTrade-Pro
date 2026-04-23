@@ -24,5 +24,7 @@ urlpatterns = [
     # strategies module
     path('api/strategies/', include('src.apps.strategies.urls')),
 
+    path("api/", include("src.apps.data_pipeline.urls")),
+
 
 ]
